@@ -1,383 +1,117 @@
--- Fikri Cihuy Hub (FCH) - Extended Full Script
--- Script contains Status, Main, ESP, Teleport, Shop, Config tabs
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+local Title = Instance.new("TextLabel")
+local OpenButton = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TeleportService = game:GetService("TeleportService")
-local StarterGui = game:GetService("StarterGui")
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
+-- Fungsi drag mobile
+local function Dragify(frame)
+	local dragToggle, dragInput, dragStart, startPos
 
--- UI Setup
-if CoreGui:FindFirstChild("FCH_UI") then CoreGui.FCH_UI:Destroy() end
-local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "FCH_UI"
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 800, 0, 600)
-MainFrame.Position = UDim2.new(0.5, -400, 0.5, -300)
-MainFrame.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
-MainFrame.BorderColor3 = Color3.fromRGB(0, 127, 255)
-MainFrame.Active = true
-MainFrame.Draggable = true
+	frame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragToggle = true
+			dragStart = input.Position
+			startPos = frame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
 
--- Create Tabs
-local tabButtons = {}
-local contentFrames = {}
-local tabNames = {"Status","Main","ESP","Teleport","Shop","Config"}
+	frame.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+			dragInput = input
+		end
+	end)
 
-for i, name in ipairs(tabNames) do
-    local btn = Instance.new("TextButton", MainFrame)
-    btn.Name = name.."Btn"
-    btn.Text = name
-    btn.Size = UDim2.new(0, 120, 0, 30)
-    btn.Position = UDim2.new(0, (i-1)*120, 0, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(0,127,255)
-    btn.TextColor3 = Color3.new(1,1,1)
-    tabButtons[name] = btn
-    local frame = Instance.new("Frame", MainFrame)
-    frame.Name = name.."Frame"
-    frame.Size = UDim2.new(1,0,1,-30)
-    frame.Position = UDim2.new(0,0,0,30)
-    frame.BackgroundTransparency = 1
-    frame.Visible = (name == "Status")
-    contentFrames[name] = frame
-    btn.MouseButton1Click:Connect(function()
-        for _,f in pairs(contentFrames) do f.Visible = false end
-        frame.Visible = true
-    end)
+	game:GetService("UserInputService").InputChanged:Connect(function(input)
+		if input == dragInput and dragToggle then
+			local delta = input.Position - dragStart
+			frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
 end
 
--- Status Tab Content
-local StatusLabel1 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel1.Text = "Status Feature 1 - Description of functionality"
-StatusLabel1.Size = UDim2.new(0, 400,0,20)
-StatusLabel1.Position = UDim2.new(0, 10,0,22)
-StatusLabel1.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel1.BackgroundTransparency = 1
-local StatusLabel2 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel2.Text = "Status Feature 2 - Description of functionality"
-StatusLabel2.Size = UDim2.new(0, 400,0,20)
-StatusLabel2.Position = UDim2.new(0, 10,0,44)
-StatusLabel2.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel2.BackgroundTransparency = 1
-local StatusLabel3 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel3.Text = "Status Feature 3 - Description of functionality"
-StatusLabel3.Size = UDim2.new(0, 400,0,20)
-StatusLabel3.Position = UDim2.new(0, 10,0,66)
-StatusLabel3.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel3.BackgroundTransparency = 1
-local StatusLabel4 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel4.Text = "Status Feature 4 - Description of functionality"
-StatusLabel4.Size = UDim2.new(0, 400,0,20)
-StatusLabel4.Position = UDim2.new(0, 10,0,88)
-StatusLabel4.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel4.BackgroundTransparency = 1
-local StatusLabel5 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel5.Text = "Status Feature 5 - Description of functionality"
-StatusLabel5.Size = UDim2.new(0, 400,0,20)
-StatusLabel5.Position = UDim2.new(0, 10,0,110)
-StatusLabel5.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel5.BackgroundTransparency = 1
-local StatusLabel6 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel6.Text = "Status Feature 6 - Description of functionality"
-StatusLabel6.Size = UDim2.new(0, 400,0,20)
-StatusLabel6.Position = UDim2.new(0, 10,0,132)
-StatusLabel6.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel6.BackgroundTransparency = 1
-local StatusLabel7 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel7.Text = "Status Feature 7 - Description of functionality"
-StatusLabel7.Size = UDim2.new(0, 400,0,20)
-StatusLabel7.Position = UDim2.new(0, 10,0,154)
-StatusLabel7.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel7.BackgroundTransparency = 1
-local StatusLabel8 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel8.Text = "Status Feature 8 - Description of functionality"
-StatusLabel8.Size = UDim2.new(0, 400,0,20)
-StatusLabel8.Position = UDim2.new(0, 10,0,176)
-StatusLabel8.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel8.BackgroundTransparency = 1
-local StatusLabel9 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel9.Text = "Status Feature 9 - Description of functionality"
-StatusLabel9.Size = UDim2.new(0, 400,0,20)
-StatusLabel9.Position = UDim2.new(0, 10,0,198)
-StatusLabel9.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel9.BackgroundTransparency = 1
-local StatusLabel10 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel10.Text = "Status Feature 10 - Description of functionality"
-StatusLabel10.Size = UDim2.new(0, 400,0,20)
-StatusLabel10.Position = UDim2.new(0, 10,0,220)
-StatusLabel10.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel10.BackgroundTransparency = 1
-local StatusLabel11 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel11.Text = "Status Feature 11 - Description of functionality"
-StatusLabel11.Size = UDim2.new(0, 400,0,20)
-StatusLabel11.Position = UDim2.new(0, 10,0,242)
-StatusLabel11.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel11.BackgroundTransparency = 1
-local StatusLabel12 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel12.Text = "Status Feature 12 - Description of functionality"
-StatusLabel12.Size = UDim2.new(0, 400,0,20)
-StatusLabel12.Position = UDim2.new(0, 10,0,264)
-StatusLabel12.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel12.BackgroundTransparency = 1
-local StatusLabel13 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel13.Text = "Status Feature 13 - Description of functionality"
-StatusLabel13.Size = UDim2.new(0, 400,0,20)
-StatusLabel13.Position = UDim2.new(0, 10,0,286)
-StatusLabel13.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel13.BackgroundTransparency = 1
-local StatusLabel14 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel14.Text = "Status Feature 14 - Description of functionality"
-StatusLabel14.Size = UDim2.new(0, 400,0,20)
-StatusLabel14.Position = UDim2.new(0, 10,0,308)
-StatusLabel14.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel14.BackgroundTransparency = 1
-local StatusLabel15 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel15.Text = "Status Feature 15 - Description of functionality"
-StatusLabel15.Size = UDim2.new(0, 400,0,20)
-StatusLabel15.Position = UDim2.new(0, 10,0,330)
-StatusLabel15.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel15.BackgroundTransparency = 1
-local StatusLabel16 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel16.Text = "Status Feature 16 - Description of functionality"
-StatusLabel16.Size = UDim2.new(0, 400,0,20)
-StatusLabel16.Position = UDim2.new(0, 10,0,352)
-StatusLabel16.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel16.BackgroundTransparency = 1
-local StatusLabel17 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel17.Text = "Status Feature 17 - Description of functionality"
-StatusLabel17.Size = UDim2.new(0, 400,0,20)
-StatusLabel17.Position = UDim2.new(0, 10,0,374)
-StatusLabel17.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel17.BackgroundTransparency = 1
-local StatusLabel18 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel18.Text = "Status Feature 18 - Description of functionality"
-StatusLabel18.Size = UDim2.new(0, 400,0,20)
-StatusLabel18.Position = UDim2.new(0, 10,0,396)
-StatusLabel18.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel18.BackgroundTransparency = 1
-local StatusLabel19 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel19.Text = "Status Feature 19 - Description of functionality"
-StatusLabel19.Size = UDim2.new(0, 400,0,20)
-StatusLabel19.Position = UDim2.new(0, 10,0,418)
-StatusLabel19.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel19.BackgroundTransparency = 1
-local StatusLabel20 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel20.Text = "Status Feature 20 - Description of functionality"
-StatusLabel20.Size = UDim2.new(0, 400,0,20)
-StatusLabel20.Position = UDim2.new(0, 10,0,440)
-StatusLabel20.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel20.BackgroundTransparency = 1
-local StatusLabel21 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel21.Text = "Status Feature 21 - Description of functionality"
-StatusLabel21.Size = UDim2.new(0, 400,0,20)
-StatusLabel21.Position = UDim2.new(0, 10,0,462)
-StatusLabel21.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel21.BackgroundTransparency = 1
-local StatusLabel22 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel22.Text = "Status Feature 22 - Description of functionality"
-StatusLabel22.Size = UDim2.new(0, 400,0,20)
-StatusLabel22.Position = UDim2.new(0, 10,0,484)
-StatusLabel22.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel22.BackgroundTransparency = 1
-local StatusLabel23 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel23.Text = "Status Feature 23 - Description of functionality"
-StatusLabel23.Size = UDim2.new(0, 400,0,20)
-StatusLabel23.Position = UDim2.new(0, 10,0,506)
-StatusLabel23.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel23.BackgroundTransparency = 1
-local StatusLabel24 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel24.Text = "Status Feature 24 - Description of functionality"
-StatusLabel24.Size = UDim2.new(0, 400,0,20)
-StatusLabel24.Position = UDim2.new(0, 10,0,528)
-StatusLabel24.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel24.BackgroundTransparency = 1
-local StatusLabel25 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel25.Text = "Status Feature 25 - Description of functionality"
-StatusLabel25.Size = UDim2.new(0, 400,0,20)
-StatusLabel25.Position = UDim2.new(0, 10,0,550)
-StatusLabel25.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel25.BackgroundTransparency = 1
-local StatusLabel26 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel26.Text = "Status Feature 26 - Description of functionality"
-StatusLabel26.Size = UDim2.new(0, 400,0,20)
-StatusLabel26.Position = UDim2.new(0, 10,0,572)
-StatusLabel26.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel26.BackgroundTransparency = 1
-local StatusLabel27 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel27.Text = "Status Feature 27 - Description of functionality"
-StatusLabel27.Size = UDim2.new(0, 400,0,20)
-StatusLabel27.Position = UDim2.new(0, 10,0,594)
-StatusLabel27.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel27.BackgroundTransparency = 1
-local StatusLabel28 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel28.Text = "Status Feature 28 - Description of functionality"
-StatusLabel28.Size = UDim2.new(0, 400,0,20)
-StatusLabel28.Position = UDim2.new(0, 10,0,616)
-StatusLabel28.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel28.BackgroundTransparency = 1
-local StatusLabel29 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel29.Text = "Status Feature 29 - Description of functionality"
-StatusLabel29.Size = UDim2.new(0, 400,0,20)
-StatusLabel29.Position = UDim2.new(0, 10,0,638)
-StatusLabel29.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel29.BackgroundTransparency = 1
-local StatusLabel30 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel30.Text = "Status Feature 30 - Description of functionality"
-StatusLabel30.Size = UDim2.new(0, 400,0,20)
-StatusLabel30.Position = UDim2.new(0, 10,0,660)
-StatusLabel30.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel30.BackgroundTransparency = 1
-local StatusLabel31 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel31.Text = "Status Feature 31 - Description of functionality"
-StatusLabel31.Size = UDim2.new(0, 400,0,20)
-StatusLabel31.Position = UDim2.new(0, 10,0,682)
-StatusLabel31.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel31.BackgroundTransparency = 1
-local StatusLabel32 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel32.Text = "Status Feature 32 - Description of functionality"
-StatusLabel32.Size = UDim2.new(0, 400,0,20)
-StatusLabel32.Position = UDim2.new(0, 10,0,704)
-StatusLabel32.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel32.BackgroundTransparency = 1
-local StatusLabel33 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel33.Text = "Status Feature 33 - Description of functionality"
-StatusLabel33.Size = UDim2.new(0, 400,0,20)
-StatusLabel33.Position = UDim2.new(0, 10,0,726)
-StatusLabel33.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel33.BackgroundTransparency = 1
-local StatusLabel34 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel34.Text = "Status Feature 34 - Description of functionality"
-StatusLabel34.Size = UDim2.new(0, 400,0,20)
-StatusLabel34.Position = UDim2.new(0, 10,0,748)
-StatusLabel34.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel34.BackgroundTransparency = 1
-local StatusLabel35 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel35.Text = "Status Feature 35 - Description of functionality"
-StatusLabel35.Size = UDim2.new(0, 400,0,20)
-StatusLabel35.Position = UDim2.new(0, 10,0,770)
-StatusLabel35.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel35.BackgroundTransparency = 1
-local StatusLabel36 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel36.Text = "Status Feature 36 - Description of functionality"
-StatusLabel36.Size = UDim2.new(0, 400,0,20)
-StatusLabel36.Position = UDim2.new(0, 10,0,792)
-StatusLabel36.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel36.BackgroundTransparency = 1
-local StatusLabel37 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel37.Text = "Status Feature 37 - Description of functionality"
-StatusLabel37.Size = UDim2.new(0, 400,0,20)
-StatusLabel37.Position = UDim2.new(0, 10,0,814)
-StatusLabel37.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel37.BackgroundTransparency = 1
-local StatusLabel38 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel38.Text = "Status Feature 38 - Description of functionality"
-StatusLabel38.Size = UDim2.new(0, 400,0,20)
-StatusLabel38.Position = UDim2.new(0, 10,0,836)
-StatusLabel38.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel38.BackgroundTransparency = 1
-local StatusLabel39 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel39.Text = "Status Feature 39 - Description of functionality"
-StatusLabel39.Size = UDim2.new(0, 400,0,20)
-StatusLabel39.Position = UDim2.new(0, 10,0,858)
-StatusLabel39.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel39.BackgroundTransparency = 1
-local StatusLabel40 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel40.Text = "Status Feature 40 - Description of functionality"
-StatusLabel40.Size = UDim2.new(0, 400,0,20)
-StatusLabel40.Position = UDim2.new(0, 10,0,880)
-StatusLabel40.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel40.BackgroundTransparency = 1
-local StatusLabel41 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel41.Text = "Status Feature 41 - Description of functionality"
-StatusLabel41.Size = UDim2.new(0, 400,0,20)
-StatusLabel41.Position = UDim2.new(0, 10,0,902)
-StatusLabel41.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel41.BackgroundTransparency = 1
-local StatusLabel42 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel42.Text = "Status Feature 42 - Description of functionality"
-StatusLabel42.Size = UDim2.new(0, 400,0,20)
-StatusLabel42.Position = UDim2.new(0, 10,0,924)
-StatusLabel42.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel42.BackgroundTransparency = 1
-local StatusLabel43 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel43.Text = "Status Feature 43 - Description of functionality"
-StatusLabel43.Size = UDim2.new(0, 400,0,20)
-StatusLabel43.Position = UDim2.new(0, 10,0,946)
-StatusLabel43.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel43.BackgroundTransparency = 1
-local StatusLabel44 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel44.Text = "Status Feature 44 - Description of functionality"
-StatusLabel44.Size = UDim2.new(0, 400,0,20)
-StatusLabel44.Position = UDim2.new(0, 10,0,968)
-StatusLabel44.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel44.BackgroundTransparency = 1
-local StatusLabel45 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel45.Text = "Status Feature 45 - Description of functionality"
-StatusLabel45.Size = UDim2.new(0, 400,0,20)
-StatusLabel45.Position = UDim2.new(0, 10,0,990)
-StatusLabel45.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel45.BackgroundTransparency = 1
-local StatusLabel46 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel46.Text = "Status Feature 46 - Description of functionality"
-StatusLabel46.Size = UDim2.new(0, 400,0,20)
-StatusLabel46.Position = UDim2.new(0, 10,0,1012)
-StatusLabel46.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel46.BackgroundTransparency = 1
-local StatusLabel47 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel47.Text = "Status Feature 47 - Description of functionality"
-StatusLabel47.Size = UDim2.new(0, 400,0,20)
-StatusLabel47.Position = UDim2.new(0, 10,0,1034)
-StatusLabel47.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel47.BackgroundTransparency = 1
-local StatusLabel48 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel48.Text = "Status Feature 48 - Description of functionality"
-StatusLabel48.Size = UDim2.new(0, 400,0,20)
-StatusLabel48.Position = UDim2.new(0, 10,0,1056)
-StatusLabel48.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel48.BackgroundTransparency = 1
-local StatusLabel49 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel49.Text = "Status Feature 49 - Description of functionality"
-StatusLabel49.Size = UDim2.new(0, 400,0,20)
-StatusLabel49.Position = UDim2.new(0, 10,0,1078)
-StatusLabel49.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel49.BackgroundTransparency = 1
-local StatusLabel50 = Instance.new("TextLabel", contentFrames["Status"])
-StatusLabel50.Text = "Status Feature 50 - Description of functionality"
-StatusLabel50.Size = UDim2.new(0, 400,0,20)
-StatusLabel50.Position = UDim2.new(0, 10,0,1100)
-StatusLabel50.TextColor3 = Color3.fromRGB(255,255,255)
-StatusLabel50.BackgroundTransparency = 1
+-- GUI Setup
+ScreenGui.Name = "HadesRNG_UI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
 
--- Main Tab Content
-local MainLabel1 = Instance.new("TextLabel", contentFrames["Main"])
-MainLabel1.Text = "Main Feature 1 - Description of functionality"
-MainLabel1.Size = UDim2.new(0, 400,0,20)
-MainLabel1.Position = UDim2.new(0, 10,0,22)
-MainLabel1.TextColor3 = Color3.fromRGB(255,255,255)
-MainLabel1.BackgroundTransparency = 1
-local MainLabel2 = Instance.new("TextLabel", contentFrames["Main"])
-MainLabel2.Text = "Main Feature 2 - Description of functionality"
-MainLabel2.Size = UDim2.new(0, 400,0,20)
-MainLabel2.Position = UDim2.new(0, 10,0,44)
-MainLabel2.TextColor3 = Color3.fromRGB(255,255,255)
-MainLabel2.BackgroundTransparency = 1
-local MainLabel3 = Instance.new("TextLabel", contentFrames["Main"])
-MainLabel3.Text = "Main Feature 3 - Description of functionality"
-MainLabel3.Size = UDim2.new(0, 400,0,20)
-MainLabel3.Position = UDim2.new(0, 10,0,66)
-MainLabel3.TextColor3 = Color3.fromRGB(255,255,255)
-MainLabel3.BackgroundTransparency = 1
-local MainLabel4 = Instance.new("TextLabel", contentFrames["Main"])
-MainLabel4.Text = "Main Feature 4 - Description of functionality"
-MainLabel4.Size = UDim2.new(0, 400,0,20)
-MainLabel4.Position = UDim2.new(0, 10,0,88)
-MainLabel4.TextColor3 = Color3.fromRGB(255,255,255)
-MainLabel4.BackgroundTransparency = 1
-local MainLabel5 = Instance.new("TextLabel", contentFrames["Main"])
-MainLabel5.Text = "Main Feature 5 - Description of functionality"
-MainLabel5.Size = UDim2.new(0, 400,0,20)
-MainLabel5.Position = UDim2.new(0, 10,0,110)
-MainLabel5.TextColor3 = Color3.fro
+-- Main Panel
+MainFrame.Name = "MainPanel"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+MainFrame.Position = UDim2.new(0.25, 0, 0.2, 0)
+MainFrame.Size = UDim2.new(0.5, 0, 0.4, 0)
+MainFrame.Visible = false
+
+local CornerMain = UICorner:Clone()
+CornerMain.Parent = MainFrame
+
+local StrokeMain = UIStroke:Clone()
+StrokeMain.Parent = MainFrame
+StrokeMain.Color = Color3.fromRGB(0, 127, 255)
+StrokeMain.Thickness = 2
+
+-- Title
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, 0, 0.2, 0)
+Title.Text = "Hade's RNG Panel"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextScaled = true
+Title.Font = Enum.Font.SourceSansBold
+
+-- Close Button
+CloseButton.Parent = MainFrame
+CloseButton.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+CloseButton.Position = UDim2.new(0.88, 0, 0.05, 0)
+CloseButton.Size = UDim2.new(0.1, 0, 0.12, 0)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextScaled = true
+
+local CornerClose = UICorner:Clone()
+CornerClose.Parent = CloseButton
+
+local StrokeClose = UIStroke:Clone()
+StrokeClose.Parent = CloseButton
+StrokeClose.Color = Color3.fromRGB(0, 127, 255)
+
+-- Open Button (kotak kecil)
+OpenButton.Parent = ScreenGui
+OpenButton.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+OpenButton.Position = UDim2.new(0.03, 0, 0.4, 0)
+OpenButton.Size = UDim2.new(0.12, 0, 0.06, 0)
+OpenButton.Text = "Open"
+OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenButton.Font = Enum.Font.SourceSans
+OpenButton.TextScaled = true
+
+local CornerOpen = UICorner:Clone()
+CornerOpen.Parent = OpenButton
+
+local StrokeOpen = UIStroke:Clone()
+StrokeOpen.Parent = OpenButton
+StrokeOpen.Color = Color3.fromRGB(0, 127, 255)
+
+-- Fungsi tombol
+OpenButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = true
+	OpenButton.Visible = false
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = false
+	OpenButton.Visible = true
+end)
+
+-- Aktifkan drag
+Dragify(MainFrame)
+Dragify(OpenButton)
